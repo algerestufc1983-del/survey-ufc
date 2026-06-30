@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استبيان اختيار التخصص - مركز الجزائر الشرق</title>
+<style>
+  :root{
+    --green-dark:#0b3d2e;
+    --green:#0f5132;
+    --gold:#c9a227;
+    --bg:#f5f4f0;
+    --card:#ffffff;
+    --text:#1f2a24;
+    --muted:#6b7568;
+    --border:#e0ddd2;
+    --danger:#b3261e;
+    --success:#1b7a43;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Tahoma','Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+  header{
+    background:linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff;
+    padding:28px 16px;
+    text-align:center;
+    border-bottom:4px solid var(--gold);
+  }
+  header h1{font-size:22px;font-weight:600;margin-bottom:6px;}
+  header p{font-size:14px;opacity:.9;}
+  .container{
+    max-width:640px;
+    margin:24px auto;
+    padding:0 16px 60px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .card h3{font-size:15px;margin-bottom:14px;color:var(--green-dark);font-weight:600;}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
+  input[type=text],textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-family:inherit;
+    font-size:14px;
+    background:#fafaf8;
+  }
+  input:focus,textarea:focus{outline:none;border-color:var(--green);}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:480px){.specs{grid-template-columns:1fr;}}
+  .spec-card{
+    cursor:pointer;
+    border:2px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    text-align:center;
+    transition:.15s;
+  }
+  .spec-card:hover{border-color:#c8c2a8;}
+  .spec-card.selected{
+    border-color:var(--gold);
+    background:#fbf6e6;
+  }
+  .spec-card .icon{font-size:26px;margin-bottom:8px;}
+  .spec-card .title{font-weight:600;font-size:15px;color:var(--green-dark);margin-bottom:4px;}
+  .spec-card .desc{font-size:12px;color:var(--muted);}
+  button.submit{
+    width:100%;
+    padding:13px;
+    background:var(--green-dark);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button.submit:hover{background:var(--green);}
+  .err{color:var(--danger);font-size:13px;margin-bottom:10px;display:none;}
+  .success-box{text-align:center;padding:40px 16px;}
+  .success-box .check{font-size:46px;color:var(--success);margin-bottom:12px;}
+  .success-box h3{margin-bottom:6px;color:var(--green-dark);}
+  .success-box p{color:var(--muted);font-size:14px;}
+  footer{text-align:center;font-size:12px;color:var(--muted);padding:20px;}
+  a.admin-link{
+    position:fixed;bottom:14px;left:14px;
+    font-size:11px;color:var(--muted);
+    text-decoration:none;opacity:.5;
+  }
+
+  /* Admin */
+  #adminView{display:none;}
+  .admin-header{
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:10px;margin-bottom:18px;
+  }
+  .admin-header h2{color:var(--green-dark);font-size:18px;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+  .stat .num{font-size:24px;font-weight:700;color:var(--green-dark);}
+  .stat .lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .toolbar button, .toolbar select, .toolbar input{
+    padding:8px 12px;border:1px solid var(--border);border-radius:8px;
+    background:#fff;font-size:13px;font-family:inherit;cursor:pointer;
+  }
+  .toolbar button.primary{background:var(--green-dark);color:#fff;border:none;}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;font-size:13px;}
+  th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);}
+  th{background:var(--green-dark);color:#fff;font-weight:600;}
+  tr:hover{background:#fafaf5;}
+  .badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+  .badge.management{background:#e7eef0;color:#1b4d57;}
+  .badge.finance{background:#f6efd9;color:#7a5d10;}
+  .login-box{max-width:340px;margin:80px auto;text-align:center;}
+  .login-box input{margin-bottom:10px;}
+  .empty{text-align:center;color:var(--muted);padding:30px;font-size:13px;}
+  .del-btn{cursor:pointer;color:var(--danger);font-size:12px;background:none;border:none;}
+</style>
+</head>
+<body>
+
+<!-- ===== استمارة الطالب ===== -->
+<div id="studentView">
+<header>
+  <h1>استبيان اختيار التخصص</h1>
+  <p>السنة الأولى علوم اقتصادية وعلوم التسيير - مركز الجزائر الشرق</p>
+</header>
+
+<div class="container">
+  <div id="formBlock">
+    <div class="card">
+      <h3>المعلومات الشخصية</h3>
+      <div class="field">
+        <label>اللقب والاسم</label>
+        <input type="text" id="fullname" placeholder="اكتب اللقب والاسم الكامل">
+      </div>
+      <div class="field">
+        <label>رقم التسجيل</label>
+        <input type="text" id="regnum" placeholder="رقم التسجيل">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>اختر التخصص الذي ترغب في الالتحاق به</h3>
+      <div class="specs">
+        <div class="spec-card" data-val="management" onclick="selectSpec(this)">
+          <div class="icon">📊</div>
+          <div class="title">علوم التسيير</div>
+          <div class="desc">إدارة الأعمال، الموارد البشرية، التسويق والإدارة العامة للمؤسسات</div>
+        </div>
+        <div class="spec-card" data-val="finance" onclick="selectSpec(this)">
+          <div class="icon">💰</div>
+          <div class="title">علوم مالية</div>
+          <div class="desc">المحاسبة</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>سبب الاختيار (اختياري)</label>
+      <textarea id="reason" rows="3" placeholder="اذكر باختصار سبب اختيارك لهذا التخصص"></textarea>
+    </div>
+
+    <p class="err" id="errMsg"></p>
+    <button class="submit" onclick="submitForm()">إرسال الاستبيان</button>
+  </div>
+
+  <div class="card success-box" id="successBlock" style="display:none;">
+    <div class="check">✓</div>
+    <h3>تم استلام إجابتك بنجاح</h3>
+    <p id="summaryText"></p>
+  </div>
+</div>
+
+<footer>مركز الجزائر الشرق - جامعة التكوين المتواصل</footer>
+<a href="#" class="admin-link" onclick="showAdmin();return false;">دخول المسؤول</a>
+</div>
+
+<!-- ===== لوحة المسؤول ===== -->
+<div id="adminView">
+  <header>
+    <h1>لوحة تحكم المسؤول</h1>
+    <p>نتائج استبيان اختيار التخصص</p>
+  </header>
+  <div class="container" style="max-width:900px;">
+
+    <div id="loginBlock" class="card login-box">
+      <h3>تسجيل دخول المسؤول</h3>
+      <input type="text" id="adminPass" placeholder="كلمة المرور">
+      <button class="submit" onclick="tryLogin()">دخول</button>
+      <p class="err" id="loginErr"></p>
+    </div>
+
+    <div id="dashboardBlock" style="display:none;">
+      <div class="admin-header">
+        <h2>القوائم حسب الرغبة</h2>
+        <button class="toolbar primary" style="border:none;padding:8px 14px;border-radius:8px;color:#fff;background:var(--green-dark);cursor:pointer;" onclick="logout()">تسجيل خروج</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="num" id="statTotal">0</div><div class="lbl">إجمالي الإجابات</div></div>
+        <div class="stat"><div class="num" id="statManagement">0</div><div class="lbl">علوم التسيير</div></div>
+        <div class="stat"><div class="num" id="statFinance">0</div><div class="lbl">علوم مالية</div></div>
+      </div>
+
+      <div class="toolbar">
+        <select id="filterSelect" onchange="renderTable()">
+          <option value="all">كل التخصصات</option>
+          <option value="management">علوم التسيير فقط</option>
+          <option value="finance">علوم مالية فقط</option>
+        </select>
+        <input type="text" id="searchBox" placeholder="بحث بالاسم أو رقم التسجيل" oninput="renderTable()">
+        <button onclick="exportCSV('all')">⬇ تصدير الكل (CSV)</button>
+        <button onclick="exportCSV('management')">⬇ تصدير علوم التسيير</button>
+        <button onclick="exportCSV('finance')">⬇ تصدير علوم مالية</button>
+        <button onclick="refreshData()">↻ تحديث</button>
+      </div>
+
+      <div id="tableWrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'specialization_survey_responses_v1';
+const ADMIN_PASSWORD = 'admin2026'; // يمكن تغييرها
+
+let selectedSpec = null;
+
+function selectSpec(el){
+  document.querySelectorAll('.spec-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSpec = el.getAttribute('data-val');
+}
+
+function getResponses(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }catch(e){return [];}
+}
+function saveResponses(arr){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+function submitForm(){
+  const name = document.getElementById('fullname').value.trim();
+  const reg = document.getElementById('regnum').value.trim();
+  const reason = document.getElementById('reason').value.trim();
+  const errEl = document.getElementById('errMsg');
+
+  if(!name || !reg || !selectedSpec){
+    errEl.textContent = 'الرجاء تعبئة الاسم ورقم التسجيل واختيار التخصص قبل الإرسال.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  const responses = getResponses();
+  responses.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    fullname: name,
+    regnum: reg,
+    specialization: selectedSpec,
+    reason: reason,
+    date: new Date().toLocaleString('ar-DZ')
+  });
+  saveResponses(responses);
+
+  const specLabel = selectedSpec === 'management' ? 'علوم التسيير' : 'علوم مالية';
+  document.getElementById('summaryText').textContent = name + ' - التخصص المختار: ' + specLabel;
+  document.getElementById('formBlock').style.display = 'none';
+  document.getElementById('successBlock').style.display = 'block';
+}
+
+function showAdmin(){
+  document.getElementById('studentView').style.display = 'none';
+  document.getElementById('adminView').style.display = 'block';
+}
+function backToStudent(){
+  document.getElementById('adminView').style.display = 'none';
+  document.getElementById('studentView').style.display = 'block';
+}
+
+function tryLogin(){
+  const pass = document.getElementById('adminPass').value;
+  if(pass === ADMIN_PASSWORD){
+    sessionStorage.setItem('admin_logged_in','1');
+    document.getElementById('loginBlock').style.display = 'none';
+    document.getElementById('dashboardBlock').style.display = 'block';
+    refreshData();
+  }else{
+    document.getElementById('loginErr').textContent = 'كلمة المرور غير صحيحة';
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function logout(){
+  sessionStorage.removeItem('admin_logged_in');
+  document.getElementById('loginBlock').style.display = 'block';
+  document.getElementById('dashboardBlock').style.display = 'none';
+  document.getElementById('adminPass').value='';
+}
+
+function refreshData(){
+  const data = getResponses();
+  document.getElementById('statTotal').textContent = data.length;
+  document.getElementById('statManagement').textContent = data.filter(r=>r.specialization==='management').length;
+  document.getElementById('statFinance').textContent = data.filter(r=>r.specialization==='finance').length;
+  renderTable();
+}
+
+function renderTable(){
+  const filter = document.getElementById('filterSelect').value;
+  const search = document.getElementById('searchBox').value.trim().toLowerCase();
+  let data = getResponses();
+
+  if(filter !== 'all'){
+    data = data.filter(r=>r.specialization===filter);
+  }
+  if(search){
+    data = data.filter(r =>
+      r.fullname.toLowerCase().includes(search) ||
+      r.regnum.toLowerCase().includes(search)
+    );
+  }
+
+  const wrap = document.getElementById('tableWrap');
+  if(data.length===0){
+    wrap.innerHTML = '<div class="card empty">لا توجد نتائج مطابقة</div>';
+    return;
+  }
+
+  let html = '<table><thead><tr><th>اللقب والاسم</th><th>رقم التسجيل</th><th>التخصص</th><th>التاريخ</th><th></th></tr></thead><tbody>';
+  data.forEach(r=>{
+    const badgeClass = r.specialization === 'management' ? 'management' : 'finance';
+    const specLabel = r.specialization === 'management' ? 'علوم التسيير' : 'علوم مالية';
+    html += `<tr>
+      <td>${escapeHtml(r.fullname)}</td>
+      <td>${escapeHtml(r.regnum)}</td>
+      <td><span class="badge ${badgeClass}">${specLabel}</span></td>
+      <td>${escapeHtml(r.date||'-')}</td>
+      <td><button class="del-btn" onclick="deleteRow('${r.id}')">حذف</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function deleteRow(id){
+  if(!confirm('هل تريد حذف هذه الإجابة؟')) return;
+  let data = getResponses();
+  data = data.filter(r=>r.id!==id);
+  saveResponses(data);
+  refreshData();
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+function exportCSV(type){
+  let data = getResponses();
+  if(type !== 'all'){
+    data = data.filter(r=>r.specialization===type);
+  }
+  if(data.length===0){
+    alert('لا توجد بيانات للتصدير');
+    return;
+  }
+  const headers = ['اللقب والاسم','رقم التسجيل','التخصص','سبب الاختيار','التاريخ'];
+  const rows = data.map(r=>[
+    r.fullname,
+    r.regnum,
+    r.specialization==='management'?'علوم التسيير':'علوم مالية',
+    r.reason||'',
+    r.date||''
+  ]);
+  let csv = '\uFEFF' + headers.join(',') + '\n';
+  rows.forEach(row=>{
+    csv += row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const suffix = type==='all' ? 'الكل' : (type==='management'?'علوم_التسيير':'علوم_مالية');
+  a.download = 'نتائج_الاستبيان_' + suffix + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// عند تحميل الصفحة: إذا كان هناك جلسة مسؤول مفتوحة، أبقِها مفتوحة
+window.addEventListener('load', () => {
+  if(sessionStorage.getItem('admin_logged_in')==='1' && location.hash === '#admin'){
+    showAdmin();
+    document.getElementById('loginBlock').style.display='none';
+    document.getElementById('dashboardBlock').style.display='block';
+    refreshData();
+  }
+});
+</script>
+</body>
+</html>
